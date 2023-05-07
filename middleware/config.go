@@ -14,9 +14,11 @@ func InitConfig(configName string, configType string, configPath string) {
 
 	Config.SetConfigName(configName)
 	Config.SetConfigType(configType)
-	Config.AddConfigPath(configPath) // path to look for the config file in
+	// path to look for the config file in
+	Config.AddConfigPath(configPath)
 
-	err := Config.ReadInConfig() // Find and read the config file
+	// Find and read the config file
+	err := Config.ReadInConfig()
 	if err != nil {
 		color.Red("Fatal error config file: " + err.Error())
 	}

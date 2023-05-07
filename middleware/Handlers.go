@@ -10,6 +10,7 @@ import (
 
 // AuthCheckHandler 进行拦截，不登录无法访问除主页以及登录以外的网页
 func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
+
 	return func(c *gin.Context) {
 
 		// 从请求头中获取 token
