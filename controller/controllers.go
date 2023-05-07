@@ -52,6 +52,15 @@ func LoginPostFunc(c *gin.Context) {
 		return
 	}
 
+	// 返回密码错误信息
+	passwordError := func(c *gin.Context, role string) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadRequest,
+			"role": role,
+			"msg":  "Password wrong!",
+		})
+	}
+
 	// 在用户表中查询到了用户信息
 	if userInfo.UserName != "" {
 		// 确认密码无误
@@ -71,11 +80,7 @@ func LoginPostFunc(c *gin.Context) {
 
 			// 密码错误
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": http.StatusBadRequest,
-				"role": "User",
-				"msg":  "Password wrong!",
-			})
+			passwordError(c, "User")
 			return
 		}
 	}
@@ -104,11 +109,7 @@ func LoginPostFunc(c *gin.Context) {
 
 			// 密码错误
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": http.StatusBadRequest,
-				"role": "Admin",
-				"msg":  "Password wrong!",
-			})
+			passwordError(c, "Admin")
 		}
 	}
 }

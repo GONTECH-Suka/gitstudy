@@ -4,7 +4,6 @@ import (
 	"Gin_EdMaSys/model"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 	"net/http"
 )
 
@@ -24,15 +23,19 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 		}
 		tokenString := cookie.Value
 
-		// 如果没有 token 返回错误信息
-		if tokenString == "" {
-			color.Redln("Authorization token not found")
+		// 返回错误信息
+		returnErrorMsg := func(c *gin.Context, msg string) {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code":    http.StatusUnauthorized,
-				"message": "Authorization token not found",
+				"message": msg,
 			})
 			c.Abort()
 			return
+		}
+
+		// 如果没有 token 返回错误信息
+		if tokenString == "" {
+			returnErrorMsg(c, "Authorization token not found")
 		}
 
 		// 解析前端传来的token
@@ -46,12 +49,7 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 		})
 		// 如果解析出错，返回错误信息
 		if err1 != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code":    http.StatusUnauthorized,
-				"message": "Authorization token can not be decoded properly",
-			})
-			c.Abort()
-			return
+			returnErrorMsg(c, "Authorization token can not be decoded properly")
 		}
 
 		// 解析后端保存的token
@@ -64,24 +62,14 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 			return MySecret, nil
 		})
 		if err2 != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code":    http.StatusUnauthorized,
-				"message": "Authorization token can not be decoded properly",
-			})
-			c.Abort()
-			return
+			returnErrorMsg(c, "Authorization token can not be decoded properly")
 		}
 
 		// 解析出的结果与保存的相同则验证成功,可以继续访问
 		if savedToken.Raw == fontToken.Raw {
 			c.Next()
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code":    http.StatusUnauthorized,
-				"message": "Authorization token is not valid",
-			})
-			c.Abort()
-			return
+			returnErrorMsg(c, "Authorization token is not valid")
 		}
 	}
 
