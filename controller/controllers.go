@@ -22,29 +22,6 @@ func LoginGetFunc(c *gin.Context) {
 	c.HTML(http.StatusOK, "index/login.tmpl", gin.H{})
 }
 
-// ConfirmCasbin 验证登录者权限并设置cookie
-func ConfirmCasbin(c *gin.Context, res bool, role string, cookieName string, token string) {
-	if res == true {
-		// 这样设置可以让每次请求的请求头都带上token
-		c.SetCookie(cookieName, token, 3600, "/", "", false, false)
-		// 权限验证成功返回信息
-		c.JSON(http.StatusOK, gin.H{
-			"code": http.StatusMovedPermanently,
-			"msg":  "Welcome",
-			"role": role,
-		})
-		return
-	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code": http.StatusUnauthorized,
-			"msg":  "User does not have permission to visit this part...",
-			"role": role,
-		})
-		return
-	}
-
-}
-
 // LoginPostFunc 处理登录请求
 func LoginPostFunc(c *gin.Context) {
 
@@ -150,4 +127,27 @@ func GetAdminHomePage(c *gin.Context) {
 		"code": http.StatusOK,
 		"msg":  "我是一个一个管理员",
 	})
+}
+
+// ConfirmCasbin 验证登录者权限并设置cookie
+func ConfirmCasbin(c *gin.Context, res bool, role string, cookieName string, token string) {
+	if res == true {
+		// 这样设置可以让每次请求的请求头都带上token
+		c.SetCookie(cookieName, token, 3600, "/", "", false, false)
+		// 权限验证成功返回信息
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusMovedPermanently,
+			"msg":  "Welcome",
+			"role": role,
+		})
+		return
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code": http.StatusUnauthorized,
+			"msg":  "User does not have permission to visit this part...",
+			"role": role,
+		})
+		return
+	}
+
 }

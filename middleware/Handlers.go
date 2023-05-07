@@ -18,6 +18,7 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 		if err != nil {
 			// 处理获取 Cookie 失败的情况
 			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    http.StatusBadRequest,
 				"message": "Cookie has something wrong",
 			})
 		}
@@ -27,6 +28,7 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 		if tokenString == "" {
 			color.Redln("Authorization token not found")
 			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    http.StatusUnauthorized,
 				"message": "Authorization token not found",
 			})
 			c.Abort()
@@ -45,7 +47,8 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 		// 如果解析出错，返回错误信息
 		if err1 != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Authorization token is not valid",
+				"code":    http.StatusUnauthorized,
+				"message": "Authorization token can not be decoded properly",
 			})
 			c.Abort()
 			return
@@ -62,7 +65,8 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 		})
 		if err2 != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Authorization token is not valid",
+				"code":    http.StatusUnauthorized,
+				"message": "Authorization token can not be decoded properly",
 			})
 			c.Abort()
 			return
@@ -73,6 +77,7 @@ func AuthCheckHandler(tokenKeeper string) gin.HandlerFunc {
 			c.Next()
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    http.StatusUnauthorized,
 				"message": "Authorization token is not valid",
 			})
 			c.Abort()
